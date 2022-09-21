@@ -1,0 +1,35 @@
+- name: ENSURE APPLICATION CONFIGURATION EXISTS
+  hosts: apic
+  connection: local
+  gather_facts: False
+
+  tasks:
+    - name: Query all EPGs of an App Profile
+      aci_epg:
+        host: "{{ inventory_hostname }}"
+        username: "{{ username }}"
+        password: "{{ password }}"
+        validate_certs: False
+        tenant: JR_test_TEN
+        ap: JR_test_AP
+        state: query
+      delegate_to: localhost
+      register: query_result
+    - debug: msg=query_result.json.fvAP.children.fvAEPg.name
+    - name: Add a new physical domain to EPG binding
+      aci_epg_to_domain:
+        host: "{{ inventory_hostname }}"
+        username: "{{ username }}"
+        password: "{{ password }}"
+        validate_certs: False
+        tenant: JR_test_TEN
+        ap: JR_test_AP
+        epg: "{{ item.epg }}"
+        domain: JR_test_DOM
+        domain_type: phys
+        deploy_immediacy: immediate
+        primary_encap: 360
+        state: present
+      delegate_to: localhost
+      with_items:
+        - epg: query_result

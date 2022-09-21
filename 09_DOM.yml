@@ -1,0 +1,19 @@
+- name: ENSURE APPLICATION CONFIGURATION EXISTS
+  hosts: apic
+  connection: local
+  gather_facts: False
+  vars_prompt:
+    - name: "domain"
+      prompt: "What would you like to name your Physical Domain?"
+      private: no
+
+  tasks:
+    - name: Add a new physical domain
+      aci_domain:
+        host: "{{ inventory_hostname }}"
+        username: "{{ username }}"
+        password: "{{ password }}"
+        validate_certs: False
+        domain: "{{ domain }}"
+        domain_type: phys
+        state: present

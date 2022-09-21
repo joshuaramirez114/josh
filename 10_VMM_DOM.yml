@@ -1,0 +1,24 @@
+- name: ENSURE APPLICATION CONFIGURATION EXISTS
+  hosts: apic
+  connection: local
+  gather_facts: False
+  vars_prompt:
+    - name: "domain"
+      prompt: "What would you like to name your VMM Domain?"
+      private: no
+
+  tasks:
+    - name: Add a new VMM  domain
+      aci_domain:
+        host: "{{ inventory_hostname }}"
+        username: "{{ username }}"
+        password: "{{ password }}"
+        validate_certs: False
+        access_mode: read-write
+        domain: "{{ domain }}"
+        domain_type: vmm
+        vm_provider: vmware
+        vswitch: dvs
+        state: present
+      delegate_to: localhost
+
